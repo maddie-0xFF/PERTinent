@@ -1,0 +1,135 @@
+In case it took me too long and I forget what is happening here.
+# PROJECT_CONTEXT
+
+## PROJECT_NAME
+ProjectPath
+
+## PROJECT_TYPE
+Web application
+
+## PRIMARY_OBJECTIVE
+Implement a project planning system using PERT/CPM methodology.
+System must calculate Critical Path based on task dependencies.
+
+## ARCHITECTURE
+Frontend: React
+Backend: Python FastAPI
+Database: PostgreSQL
+ORM: SQLAlchemy
+Communication: REST API (JSON)
+
+## VERSION_SCOPE
+Version: v1
+Focus: Algorithm correctness and data integrity.
+UI complexity is not priority.
+
+## CORE_FEATURES
+1. Create project
+2. Create task inside project
+3. Define task duration (single duration value in v1)
+4. Define task dependencies (Finish-to-Start only)
+5. Validate no dependency cycles
+6. Execute PERT calculation
+7. Store calculation results
+8. Identify Critical Path
+
+## NON_FEATURES (v1)
+- No authentication
+- No multi-user support
+- No cost calculation
+- No resource allocation
+- No Gantt chart
+- No real-time updates
+- No advanced UI styling
+
+## DATABASE_ENTITIES
+
+### Project
+- id (PK)
+- name
+- description
+- created_at
+
+### Task
+- id (PK)
+- project_id (FK → Project.id)
+- name
+- description
+- duration (integer, required)
+- created_at
+
+### Dependency
+- id (PK)
+- predecessor_id (FK → Task.id)
+- successor_id (FK → Task.id)
+
+Constraints:
+- Directed graph
+- No self-dependency
+- No cycles allowed
+- Only Finish-to-Start allowed
+
+### CalculationResult
+- id (PK)
+- task_id (FK → Task.id)
+- early_start (integer)
+- early_finish (integer)
+- late_start (integer)
+- late_finish (integer)
+- slack (integer)
+- is_critical (boolean)
+- calculated_at (timestamp)
+
+## RELATIONSHIPS
+- Project 1:N Task
+- Task N:M Task via Dependency
+- Task 1:1 CalculationResult
+
+## PERT_ENGINE_REQUIREMENTS
+
+### INPUT
+- List of tasks (id, duration)
+- List of dependencies (predecessor_id, successor_id)
+
+### REQUIRED_PROCESS
+1. Topological sort
+2. Forward pass (compute ES, EF)
+3. Backward pass (compute LS, LF)
+4. Slack calculation: slack = LS - ES
+5. Critical Path rule: task is critical if slack == 0
+
+### OUTPUT
+For each task:
+- ES
+- EF
+- LS
+- LF
+- Slack
+- is_critical
+
+## CALCULATION_RULES
+- Project start time = 0
+- ES(task) = max(EF of predecessors)
+- EF(task) = ES + duration
+- LF(task) = min(LS of successors)
+- LS(task) = LF - duration
+
+## VALIDATION_RULES
+- System must reject cyclic dependencies
+- System must reject dependency between tasks of different projects
+- System must reject negative duration
+- System must reject duplicate dependency entries
+
+## DEVELOPMENT_PRIORITY
+1. Database schema
+2. CRUD backend
+3. Dependency validation
+4. PERT engine
+5. Calculation endpoint
+6. Frontend integration
+
+## SYSTEM_BOUNDARY
+Primary complexity must exist in backend PERT engine.
+Frontend acts as data input and visualization layer only.
+
+END_OF_CONTEXT
